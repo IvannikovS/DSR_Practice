@@ -5,10 +5,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.dsr.api.config.ShortLinkConfig;
+import ru.dsr.api.dto.ShortLinkCreationDto;
+import ru.dsr.api.dto.ShortLinkDto;
 import ru.dsr.api.entity.ShortLink;
+import ru.dsr.api.mapper.ShortLinkMapper;
 import ru.dsr.api.services.ShortLinkService;
 
+import java.math.BigInteger;
 import java.util.List;
+
+
 
 @RestController
 @RequestMapping("/api")
@@ -16,21 +23,35 @@ import java.util.List;
 public class ShortLinkController {
 
     private final ShortLinkService shortLinkService;
+    private final ShortLinkConfig shortLinkConfig;
 
     @Autowired
-    public ShortLinkController(ShortLinkService shortLinkService) {
+    public ShortLinkController(ShortLinkService shortLinkService, ShortLinkConfig shortLinkConfig) {
         this.shortLinkService = shortLinkService;
+        this.shortLinkConfig = shortLinkConfig;
     }
 
     @GetMapping("/all")
-    public List<ShortLink> getShortLinks() {
-        return shortLinkService.getShortLinks();
+    public ResponseEntity<List<ShortLinkDto>> getShortLinks() {
+        return ResponseEntity.ok(shortLinkService.getShortLinks());
+    }
+
+    @GetMapping("/all/{id}")
+    public ShortLinkDto getShortLink(@PathVariable("id") Integer id) {
+        return ShortLinkMapper.INSTANCE.toDto(shortLinkService.getShortLink(id));
     }
 
     @PostMapping("/shorten")
-    public String createShortLink(@RequestBody String longLink) {
-        ShortLink shortLink = shortLinkService.createShortLink(longLink);
-        return "Short link created: " + "http://localhost:8080/api/" + shortLink.getShortCode();
+    public String createShortLink(@RequestBody ShortLinkCreationDto creationDto) {
+        ShortLink shortLink = shortLinkService.createShortLink(creationDto);
+        return "Short link created: " + shortLinkConfig.getBaseUrl() + shortLink.getShortCode();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<HttpStatus> delete(@PathVariable("id") Integer id) {
+        shortLinkService.getShortLink(id);
+        shortLinkService.delete(id);
+        return ResponseEntity.ok(HttpStatus.OK);
     }
 
     @GetMapping("/{shortCode}")
