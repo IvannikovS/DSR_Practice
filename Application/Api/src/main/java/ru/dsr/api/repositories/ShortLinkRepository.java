@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 import ru.dsr.api.entity.ShortLink;
 
 
-
 @Repository
 public interface ShortLinkRepository extends JpaRepository<ShortLink, Integer> {
     ShortLink findByShortCode(String shortCode);

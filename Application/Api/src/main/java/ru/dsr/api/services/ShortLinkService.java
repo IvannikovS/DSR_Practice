@@ -9,8 +9,10 @@ import ru.dsr.api.entity.ShortLink;
 import ru.dsr.api.mapper.ShortLinkMapper;
 import ru.dsr.api.repositories.ShortLinkRepository;
 import ru.dsr.api.utils.ShortCodeGenerator;
+import ru.dsr.api.utils.exceptions.ShortLinkNotFoundException;
 
-
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,13 +47,27 @@ public class ShortLinkService {
             existingShortLink = shortLinkRepository.findByShortCode(shortCode);
         } while (existingShortLink != null);
 
-        ShortLink newShortLink = new ShortLink(creationDto.getUrl(), shortCode);
+        String url = creationDto.getUrl();
+        if (!url.startsWith("https://") && !url.startsWith("http://")) {
+            url = "https://" + url;
+        }
+
+        try {
+            new URI(url);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Некорректный URL: " + url, e);
+        }
+
+        ShortLink newShortLink = new ShortLink(url, shortCode);
         return shortLinkRepository.save(newShortLink);
     }
 
     public String getLongLinkByShortCode(String shortCode) {
         ShortLink shortLink = shortLinkRepository.findByShortCode(shortCode);
-        return (shortLink != null) ? shortLink.getUrl() : null;
+        if (shortLink == null) {
+            throw new ShortLinkNotFoundException("Not found short link with shortCode: " + shortCode);
+        }
+        return shortLink.getUrl();
     }
 
     @Transactional
