@@ -40,3 +40,16 @@ To build and run the project, follow these steps:
 
 ---------------------
 # client (frontend)
+
+## Prerequisites
+* Node.js
+* npm (Node Package Manager)
+
+To build and run the project, follow these steps:
+
+* Clone the repository: `git clone https://github.com/IvannikovS/DSR_Practice.git`
+* Navigate to the project directory: cd DSR_Practice\Application\Client
+* Build the project: npm install
+* Run the project: npm start
+
+-> The application will be available at http://localhost:3000.
