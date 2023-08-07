@@ -3,6 +3,7 @@ package ru.dsr.api.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.dsr.api.config.ShortLinkConfig;
 import ru.dsr.api.dto.ShortLinkCreationDto;
 import ru.dsr.api.dto.ShortLinkDto;
 import ru.dsr.api.entity.ShortLink;
@@ -14,6 +15,7 @@ import ru.dsr.api.utils.exceptions.ShortLinkNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -21,10 +23,12 @@ import java.util.stream.Collectors;
 public class ShortLinkService {
 
     private final ShortLinkRepository shortLinkRepository;
+    private final ShortLinkConfig shortLinkConfig;
 
     @Autowired
-    public ShortLinkService(ShortLinkRepository shortLinkRepository) {
+    public ShortLinkService(ShortLinkRepository shortLinkRepository, ShortLinkConfig shortLinkConfig) {
         this.shortLinkRepository = shortLinkRepository;
+        this.shortLinkConfig = shortLinkConfig;
     }
 
     public List<ShortLinkDto> getShortLinks() {
@@ -33,8 +37,8 @@ public class ShortLinkService {
                 .collect(Collectors.toList());
     }
 
-    public ShortLink getShortLink(Integer id) {
-        return shortLinkRepository.findById(id).orElse(null);
+    public Optional<ShortLink> getShortLink(Integer id) {
+        return shortLinkRepository.findById(id);
     }
 
     @Transactional
@@ -58,7 +62,9 @@ public class ShortLinkService {
             throw new IllegalArgumentException("Некорректный URL: " + url, e);
         }
 
-        ShortLink newShortLink = new ShortLink(url, shortCode);
+        String generatedLink = shortLinkConfig.getBaseUrl() + shortCode;
+
+        ShortLink newShortLink = new ShortLink(url, shortCode, generatedLink);
         return shortLinkRepository.save(newShortLink);
     }
 

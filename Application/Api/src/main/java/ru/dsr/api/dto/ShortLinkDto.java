@@ -10,4 +10,7 @@ public class ShortLinkDto {
     private String url;
     @NotNull
     private String shortCode;
+
+    @NotNull
+    private String generatedLink;
 }

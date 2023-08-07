@@ -117,4 +117,8 @@ public class AuthenticationService {
             }
         }
     }
+
+    public boolean isEmailUnique(String email) {
+        return !repository.existsByEmail(email);
+    }
 }

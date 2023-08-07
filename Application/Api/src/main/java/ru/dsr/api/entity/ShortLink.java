@@ -23,8 +23,13 @@ public class ShortLink {
     @Column(name = "shortCode")
     private String shortCode;
 
-    public ShortLink(@NonNull String url, @NonNull String shortCode) {
+    @NonNull
+    @Column(name = "generatedLink")
+    private String generatedLink;
+
+    public ShortLink(@NonNull String url, @NonNull String shortCode, @NonNull String generatedLink) {
         this.url = url;
         this.shortCode = shortCode;
+        this.generatedLink = generatedLink;
     }
 }

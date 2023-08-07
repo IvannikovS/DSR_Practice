@@ -13,13 +13,16 @@ public interface ShortLinkMapper {
 
     @Mapping(source = "url", target = "url")
     @Mapping(source = "shortCode", target = "shortCode")
+    @Mapping(source = "generatedLink", target = "generatedLink")
     ShortLinkDto toDto(ShortLink shortLink);
     @Mapping(source = "url", target = "url")
     @Mapping(source = "shortCode", target = "shortCode")
+    @Mapping(source = "generatedLink", target = "generatedLink")
     ShortLink toEntity(ShortLinkDto shortLinkDto);
     @Mapping(source = "url", target = "url")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "shortCode", ignore = true)
+    @Mapping(target = "generatedLink", ignore = true)
     ShortLink toEntityFromShortLinkCreationDto(ShortLinkCreationDto shortLinkCreationDto);
 
 }
